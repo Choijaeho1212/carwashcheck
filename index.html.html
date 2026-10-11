@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101d2d">
+<title>WashKit | 세차용품 관리</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#182536;--muted:#708094;--line:#e4eaf1;--blue:#2864e8;--blue-soft:#edf3ff;--green:#16845b;--shadow:0 8px 28px #152a4410}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}
+header{background:#101d2d;color:#fff;padding:26px 20px 24px}.wrap{max-width:960px;margin:auto}.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}.logo{display:grid;place-items:center;width:40px;height:40px;background:#2864e8;border-radius:13px;font-size:21px}.eyebrow{font-size:12px;color:#a9bad0;letter-spacing:1.3px;font-weight:700;margin-top:23px}.hero{font-size:clamp(25px,5vw,37px);line-height:1.25;letter-spacing:-1px;margin:8px 0}.hero span{color:#8eb1ff}.sub{color:#b9c6d5;font-size:14px;line-height:1.7;margin:10px 0 0}
+main{max-width:960px;margin:0 auto;padding:20px 16px 50px}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}.stat .label{font-size:12px;color:var(--muted)}.stat .num{font-size:26px;font-weight:800;margin-top:4px;letter-spacing:-.8px}.remaining-stat{grid-column:1/-1;background:#fff;border:2px solid #c9d9ff;padding:16px 18px}.remaining-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.remaining-title{font-size:15px;font-weight:850;color:#1c3768}.remaining-caption{font-size:12px;color:#60718b;margin-top:5px;line-height:1.5}.remaining-value{font-size:34px!important;color:#2458c7;white-space:nowrap}.remaining-value small{font-size:14px;font-weight:700;color:#60718b;letter-spacing:0}.remaining-status{font-size:13px;font-weight:750;color:#2458c7;margin-top:10px}.remaining-stat.all-done{border-color:#a9dfc8;background:#f4fcf8}.remaining-stat.all-done .remaining-title,.remaining-stat.all-done .remaining-status{color:#16734e}.progress{height:10px;background:#e8edf5;border-radius:99px;overflow:hidden;margin-top:12px}.progress div{height:100%;background:var(--blue);width:0;transition:width .2s}.remaining-stat.all-done .progress div{background:#16845b}
+.tabs{display:flex;background:#e9eef6;border-radius:14px;padding:4px;gap:4px;margin:18px 0 12px}.tab{flex:1;border:0;border-radius:11px;background:transparent;padding:12px 8px;color:#66768b;font-weight:800;font-size:14px}.tab.active{background:#fff;color:var(--blue);box-shadow:0 2px 7px #10213b12}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}.search{flex:1;min-width:180px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;background:white;outline:none}.search:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2864e81a}select,button{font:inherit}.filter{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 12px;color:var(--ink)}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:750;font-size:13px}.primary{background:var(--blue);color:#fff}.secondary{background:#fff;border:1px solid var(--line);color:var(--ink)}.success{background:#16845b;color:#fff}.danger{color:#a33d37;background:#fff3f2;border:1px solid #f5d8d5}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:20px 2px 12px}.toprow h2{font-size:17px;margin:0}.smallmuted{font-size:12px;color:var(--muted)}
+.notice{background:#edf3ff;border:1px solid #d8e5ff;color:#244d9c;border-radius:13px;padding:12px 14px;font-size:13px;line-height:1.6;margin:12px 0}.category{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:11px 0;overflow:hidden;box-shadow:var(--shadow)}.cathead{padding:14px 15px;display:flex;align-items:center;gap:10px;background:#fff;cursor:pointer}.cat-icon{width:34px;height:34px;border-radius:11px;background:var(--blue-soft);display:grid;place-items:center;font-size:17px}.catname{font-weight:800;flex:1}.count{font-size:12px;color:var(--muted);background:#f2f5f9;padding:5px 8px;border-radius:99px}.catbulk{font-size:11px;font-weight:800;white-space:nowrap;border:1px solid #d8e4fa;background:#f4f7ff;color:#2458c7;border-radius:9px;padding:7px 8px}.chevron{color:#8a98aa;transition:transform .2s}.category.closed .chevron{transform:rotate(-90deg)}.items{border-top:1px solid var(--line)}.category.closed .items{display:none}.item{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid #eff2f6;min-height:53px}.item:last-child{border-bottom:0}.item input[type=checkbox]{width:20px;height:20px;accent-color:var(--blue);flex:0 0 auto;cursor:pointer}.item .itemname{flex:1;font-size:14px;line-height:1.45}.item.done .itemname{text-decoration:line-through;color:#8b98a8}.item.today .itemname{font-weight:650}.pillbtn{font-size:11px;font-weight:750;border-radius:9px;padding:8px 9px;border:1px solid #d8e4fa;background:#f4f7ff;color:#2458c7;white-space:nowrap}.pillbtn.selected{background:#e6f6ef;border-color:#bde7d3;color:#16734e}.pillbtn.remove{background:#fff4f2;border-color:#f2d5d1;color:#a33d37}.empty{text-align:center;padding:32px 18px;color:var(--muted);font-size:14px;background:#fff;border:1px dashed #d6deea;border-radius:15px;line-height:1.7}.footer{font-size:12px;line-height:1.7;color:var(--muted);margin:20px 4px}
+.modalbg{display:none;position:fixed;inset:0;background:#101d2d88;align-items:center;justify-content:center;padding:18px;z-index:5}.modalbg.show{display:flex}.modal{background:#fff;border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:0 20px 60px #0003}.modal h3{margin:0 0 8px}.modal p{color:var(--muted);font-size:14px;line-height:1.6}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+@media(max-width:560px){header{padding:22px 17px}main{padding:14px 12px 35px}.stat{padding:11px}.stat .num{font-size:23px}.remaining-stat{padding:14px}.remaining-value{font-size:31px!important}.remaining-title{font-size:14px}.remaining-caption{font-size:11px}.tab{font-size:12px;padding:11px 5px}.toolbar{gap:7px}.search{flex-basis:100%}.filter{flex:1;min-width:0}.btn{padding:10px 11px}.item{padding:11px 10px;gap:8px}.pillbtn{padding:8px 7px}.hero{letter-spacing:-.7px}.cathead{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="brand"><div class="logo">💧</div><div>WashKit <span style="font-size:11px;color:#91a5be;font-weight:600;margin-left:5px">CAR CARE CHECKLIST</span></div></div>
+<div class="eyebrow">YOUR GEAR, ACCOUNTED FOR.</div>
+<h1 class="hero">전체 목록은 그대로,<br><span>오늘 가져갈 것만 따로.</span></h1>
+<p class="sub">보유 용품을 한 번만 등록해 두세요. 오늘 쓸 용품만 골라 세차 후 확인하고,<br>완료 버튼을 누르면 오늘 목록만 초기화됩니다.</p>
+</div></header>
+<main>
+<section class="stats">
+<div class="stat"><div class="label">전체 보유 용품</div><div class="num" id="total">0</div></div>
+<div class="stat"><div class="label">오늘 가져갈 용품</div><div class="num" id="todayCount">0</div></div>
+<div class="stat remaining-stat" id="remainingStat">
+ <div class="remaining-head">
+  <div><div class="remaining-title">🚩 세차 후 아직 확인하지 않은 용품</div><div class="remaining-caption" id="remainingCaption">오늘 가져갈 용품을 선택하면 미확인 개수가 표시됩니다.</div></div>
+  <div class="num remaining-value"><span id="remaining">0</span><small>개 남음</small></div>
+ </div>
+ <div class="progress"><div id="bar"></div></div>
+ <div class="remaining-status" id="remainingStatus">오늘 가져갈 용품을 먼저 선택해 주세요.</div>
+</div>
+</section>
+<div class="tabs">
+<button class="tab active" id="inventoryTab">🧰 전체 보유 목록</button>
+<button class="tab" id="todayTab">🚗 오늘 세차 목록 <span id="todayTabCount"></span></button>
+</div>
+<div id="inventoryTools" class="toolbar">
+<input id="search" class="search" type="search" placeholder="🔎 용품 이름 검색" aria-label="용품 검색">
+<select id="categoryFilter" class="filter" aria-label="분류 필터"><option value="">전체 분류</option></select>
+</div>
+<div id="inventoryNotice" class="notice">전체 보유 목록에서 <b>「오늘 가져가기」</b>를 눌러 오늘 사용할 용품을 골라주세요. 여기서 선택한 항목만 오늘의 체크리스트에 담깁니다.</div>
+<div class="toprow"><h2 id="listTitle">전체 보유 목록</h2><span id="shown" class="smallmuted"></span></div>
+<div id="list"></div>
+<div id="inventoryActions" class="toolbar">
+<button class="btn primary" id="addBtn">＋ 보유 용품 추가</button>
+<button class="btn secondary" id="exportBtn">백업 내보내기</button>
+<button class="btn secondary" id="importBtn">백업 불러오기</button>
+<input id="importFile" type="file" accept="application/json,.json" hidden>
+</div>
+<div id="todayActions" class="toolbar" style="display:none">
+<button class="btn success" id="finishBtn">✓ 세차 완료 · 오늘 목록 초기화</button>
+<button class="btn secondary" id="uncheckBtn">오늘 체크만 초기화</button>
+</div>
+<p class="footer">💾 목록과 오늘의 선택 상태는 현재 브라우저에 자동 저장됩니다. 완료 버튼은 오늘 가져갈 목록과 체크 상태만 비우며, 전체 보유 용품은 삭제하지 않습니다. 다른 기기와 동기화하려면 별도 온라인 저장소가 필요합니다.</p>
+</main>
+<div class="modalbg" id="modalbg"><div class="modal"><h3>보유 용품 추가</h3><p>전체 보유 목록에 등록하면 다음에도 선택해서 사용할 수 있습니다.</p>
+<form id="addForm">
+<label style="display:block;font-size:13px;font-weight:700;margin:12px 0 6px" for="itemName">용품 이름</label><input id="itemName" required maxlength="100" style="width:100%;padding:12px;border:1px solid #dce3ed;border-radius:10px;font:inherit">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 6px"><label style="font-size:13px;font-weight:700" for="itemCategory">분류</label><button type="button" class="pillbtn" id="manageCategoriesBtn">분류 추가·삭제</button></div><select id="itemCategory" style="width:100%;padding:12px;border:1px solid #dce3ed;border-radius:10px;font:inherit"></select>
+<div class="modal-actions"><button type="button" class="btn secondary" id="cancelBtn">취소</button><button type="button" class="btn primary" id="saveItemBtn">추가하기</button></div>
+</form></div></div>
+<div class="modalbg" id="categoryModal"><div class="modal"><h3>분류 관리</h3><p>분류를 추가하거나 삭제할 수 있습니다. 용품이 들어 있는 분류를 삭제하면 해당 용품을 다른 분류로 옮길 수 있습니다.</p>
+<form id="categoryForm"><label style="display:block;font-size:13px;font-weight:700;margin:12px 0 6px" for="newCategoryName">새 분류 이름</label><div style="display:flex;gap:8px"><input id="newCategoryName" required maxlength="50" placeholder="예: 유리 관리" style="min-width:0;flex:1;padding:12px;border:1px solid #dce3ed;border-radius:10px;font:inherit"><button type="submit" class="btn primary">분류 추가</button></div></form>
+<div id="categoryManagerList" style="margin-top:14px;max-height:45vh;overflow:auto"></div>
+<div class="modal-actions"><button type="button" class="btn secondary" id="categoryManagerClose">닫기</button></div></div></div>
+<div class="modalbg" id="finishModal"><div class="modal"><h3>오늘 세차를 마무리할까요?</h3><p id="finishText">오늘 목록과 체크 상태를 초기화합니다. 전체 보유 목록은 그대로 유지됩니다.</p><div class="modal-actions"><button class="btn secondary" id="finishCancel">계속 확인</button><button class="btn success" id="finishConfirm">완료 및 초기화</button></div></div></div>
+<script>
+const defaults = [
+["장비 List",["압축분무기","ik 폼프로2 폼압축 분무기","숏랜스 (본체, 25도, 40도)","돌리 & 뚜껑","준카 & 배터리 & 라이트 & 가방","비커 (500mL) & 지커 (50mL)","버킷 (그릿가드, 미트슬라이드, 어부바)","폼랜스 (원액 or 희석)","폼랜스 거치대","마그웻 하부 워시패드 + 휠패드 (미니)","퓨어스타 워시패드","브러쉬 3종 (블랙, 블루, 옐로우)","벅벅이","잇츠윈 타이어 브러쉬","프로스태프 림 브러쉬","잇츠윈 스탬프 브러쉬 or 루쿨란 브러쉬XL"]],
+["프리워시",["블루믹스 알칼리","빌트햄버 터치리스","L프리워시"]],
+["본세차",["AD 산성 카샴푸","소낙스 얼티밋 카샴푸","블루믹스 네오 카샴푸","세갤 샘플"]],
+["휠&타이어",["코흐케미 WTC","카프로 다크사이드 드레싱"]],
+["실내 세정",["클린스타 (트리거)","코흐케미Po (거품용기)","손세정제","레더코트","탈지제 (트리거)","증류수 (트리거)"]],
+["퀵디 & 코팅 & 기타",["불스원 크코플 (트리거)","루나익스트림 (트리거)","AD QD V5.0 (트리거)","카프로 에코 (틈새) (트리거)","마그웻 어게인 타월 세정제","오토그루밍 매직크림","오토그루밍 유막제거"]]
+];
+const icons={"장비 List":"🧰","프리워시":"💦","본세차":"🫧","휠&타이어":"🛞","실내 세정":"🧽","퀵디 & 코팅 & 기타":"✨"};
+const STORE="washkit_trip_v4";
+let state;try{state=JSON.parse(localStorage.getItem(STORE)||"null")}catch(e){state=null}
+if(!state||!Array.isArray(state.items)){state={items:defaults.flatMap(([cat,names])=>names.map((name,i)=>({id:cat+"-"+i+"-"+Math.random().toString(36).slice(2,7),cat,name}))),today:[],checked:[]}}
+state.today=Array.isArray(state.today)?state.today:[];state.checked=Array.isArray(state.checked)?state.checked:[];
+state.categories=Array.isArray(state.categories)?state.categories:[...new Set([...defaults.map(x=>x[0]),...state.items.map(x=>x.cat)])];
+state.items.forEach(x=>{if(!state.categories.includes(x.cat))state.categories.push(x.cat)});
+let mode="inventory";
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function categories(){return [...new Set([...state.categories,...state.items.map(x=>x.cat)])]}
+function fillSelects(){const f=$("categoryFilter"),old=f.value;f.innerHTML='<option value="">전체 분류</option>'+categories().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");if(categories().includes(old))f.value=old;$("itemCategory").innerHTML=categories().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("")}
+function renderCategoryManager(){
+ const host=$("categoryManagerList");host.innerHTML="";
+ const cats=categories();
+ cats.forEach(c=>{
+   const count=state.items.filter(x=>x.cat===c).length;
+   const row=document.createElement("div");
+   row.style.cssText="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #edf0f5";
+   const label=document.createElement("div");
+   label.innerHTML=`<div style="font-size:14px;font-weight:750;overflow-wrap:anywhere">${esc(c)}</div><div style="font-size:12px;color:#748196;margin-top:3px">${count}개 용품</div>`;
+   const actions=document.createElement("div");actions.style.cssText="display:flex;gap:6px;align-items:center";
+   const del=document.createElement("button");del.type="button";del.className="pillbtn remove";del.textContent="삭제";del.style.pointerEvents="auto";
+   del.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();
+     const current=categories();
+     if(current.length<=1){alert("분류는 최소 1개 이상 있어야 합니다.");return}
+     const inCat=state.items.filter(x=>x.cat===c);
+     if(inCat.length){
+       const targets=current.filter(v=>v!==c);
+       const target=prompt(`'${c}' 분류의 용품 ${inCat.length}개를 어느 분류로 옮길까요?\n\n${targets.map((v,i)=>`${i+1}. ${v}`).join("\n")}\n\n번호를 입력해 주세요.`);
+       if(target===null)return;
+       const idx=Number(target)-1;
+       if(!Number.isInteger(idx)||idx<0||idx>=targets.length){alert("올바른 분류 번호를 입력해 주세요.");return}
+       if(!confirm(`'${c}' 분류를 삭제하고 용품 ${inCat.length}개를 '${targets[idx]}'로 이동할까요?`))return;
+       inCat.forEach(x=>x.cat=targets[idx]);
+     }else if(!confirm(`'${c}' 분류를 삭제할까요?`)){return}
+     state.categories=state.categories.filter(v=>v!==c);
+     state.items.forEach(x=>{if(!state.categories.includes(x.cat))state.categories.push(x.cat)});
+     save();fillSelects();render();renderCategoryManager();
+   });
+   actions.appendChild(del);row.append(label,actions);host.appendChild(row);
+ });
+}
+function render(){
+ const selected=state.items.filter(x=>state.today.includes(x.id)), done=selected.filter(x=>state.checked.includes(x.id)).length;
+ const remaining=selected.length-done;
+ $("total").textContent=state.items.length;$("todayCount").textContent=selected.length;$("remaining").textContent=remaining;
+ $("bar").style.width=(selected.length?done/selected.length*100:0)+"%";$("todayTabCount").textContent=selected.length?`(${selected.length})`:"";
+ $("remainingStat").classList.toggle("all-done",selected.length>0&&remaining===0);
+ $("remainingCaption").textContent=selected.length?`총 ${selected.length}개 중 ${done}개 확인 완료 · ${remaining}개 미확인`:"오늘 가져갈 용품을 선택하면 미확인 개수가 표시됩니다.";
+ $("remainingStatus").textContent=!selected.length?"오늘 가져갈 용품을 먼저 선택해 주세요.":remaining===0?"모든 용품을 확인했습니다. 아래 ‘세차 완료’ 버튼을 눌러 마무리하세요.":`아직 ${remaining}개를 확인하지 않았습니다. 오늘 세차 목록에서 가져온 용품을 체크해 주세요.`;
+ $("inventoryTab").classList.toggle("active",mode==="inventory");$("todayTab").classList.toggle("active",mode==="today");
+ $("inventoryTools").style.display=mode==="inventory"?"flex":"none";$("inventoryNotice").style.display=mode==="inventory"?"block":"none";$("inventoryActions").style.display=mode==="inventory"?"flex":"none";$("todayActions").style.display=mode==="today"?"flex":"none";
+ $("listTitle").textContent=mode==="inventory"?"전체 보유 목록":"오늘 가져갈 용품 체크"; 
+ const q=$("search").value.trim().toLowerCase(),cat=$("categoryFilter").value;
+ let filtered=mode==="inventory"?state.items.filter(x=>(!cat||x.cat===cat)&&(!q||(x.name+" "+x.cat).toLowerCase().includes(q))):selected;
+ $("shown").textContent=`${filtered.length}개`;
+ const list=$("list");list.innerHTML="";
+ if(!filtered.length){list.innerHTML=mode==="today"?'<div class="empty">오늘 가져갈 용품이 아직 없습니다.<br>「전체 보유 목록」으로 돌아가 필요한 용품의 <b>오늘 가져가기</b>를 눌러주세요.</div>':'<div class="empty">목록이 비어 있습니다.</div>';return}
+ categories().forEach(c=>{
+   const arr=filtered.filter(x=>x.cat===c);if(!arr.length)return;
+   const all=mode==="today"?arr:state.items.filter(x=>x.cat===c), n=mode==="today"?arr.filter(x=>state.checked.includes(x.id)).length:state.items.filter(x=>x.cat===c&&state.today.includes(x.id)).length;
+   const section=document.createElement("section");section.className="category";
+   const todayIds=mode==="inventory"?state.items.filter(x=>x.cat===c).map(x=>x.id):arr.map(x=>x.id);
+   const bulkComplete=mode==="inventory"?todayIds.every(id=>state.today.includes(id)):todayIds.every(id=>state.checked.includes(id));
+   const bulkLabel=mode==="inventory"?(bulkComplete?"오늘 전체 해제":"오늘 전체 선택"):(bulkComplete?"전체 체크 해제":"전체 체크");
+   section.innerHTML=`<div class="cathead"><div class="cat-icon">${icons[c]||"📦"}</div><div class="catname">${esc(c)}</div><div class="count">${n}/${all.length}${mode==="inventory"?" 선택":""}</div><button type="button" class="catbulk">${bulkLabel}</button><div class="chevron">⌄</div></div><div class="items"></div>`;
+   section.querySelector(".cathead").addEventListener("click",()=>section.classList.toggle("closed"));
+   section.querySelector(".catbulk").addEventListener("click",e=>{
+     e.stopPropagation();
+     if(mode==="inventory"){
+       if(bulkComplete){
+         state.today=state.today.filter(id=>!todayIds.includes(id));
+         state.checked=state.checked.filter(id=>!todayIds.includes(id));
+       }else{
+         todayIds.forEach(id=>{if(!state.today.includes(id))state.today.push(id)});
+       }
+     }else{
+       if(bulkComplete) state.checked=state.checked.filter(id=>!todayIds.includes(id));
+       else todayIds.forEach(id=>{if(!state.checked.includes(id))state.checked.push(id)});
+     }
+     save();render();
+   });
+   const items=section.querySelector(".items");
+   arr.forEach(x=>{
+    const row=document.createElement("div");
+    if(mode==="inventory"){
+      const isSelected=state.today.includes(x.id);row.className="item";
+      row.innerHTML=`<span class="itemname">${esc(x.name)}</span><button type="button" class="pillbtn ${isSelected?"selected":""}">${isSelected?"✓ 오늘 선택됨":"＋ 오늘 가져가기"}</button><button type="button" class="pillbtn remove" title="보유 목록에서 삭제">삭제</button>`;
+      row.querySelectorAll("button")[0].addEventListener("click",()=>{if(isSelected){state.today=state.today.filter(id=>id!==x.id);state.checked=state.checked.filter(id=>id!==x.id)}else{state.today.push(x.id)}save();render()});
+      row.querySelector(".pillbtn.remove").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(confirm(`'${x.name}'을 전체 보유 목록에서 삭제할까요?`)){state.items=state.items.filter(y=>y.id!==x.id);state.today=state.today.filter(id=>id!==x.id);state.checked=state.checked.filter(id=>id!==x.id);save();fillSelects();render()}});
+    }else{
+      const checked=state.checked.includes(x.id);row.className="item today"+(checked?" done":"");
+      row.innerHTML=`<input type="checkbox" id="c-${esc(x.id)}" ${checked?"checked":""}><label class="itemname" for="c-${esc(x.id)}">${esc(x.name)}</label><button class="pillbtn remove" title="오늘 목록에서 제외">제외</button>`;
+      row.querySelector("input").addEventListener("change",e=>{if(e.target.checked){if(!state.checked.includes(x.id))state.checked.push(x.id)}else{state.checked=state.checked.filter(id=>id!==x.id)}save();render()});
+      row.querySelector("button").addEventListener("click",()=>{state.today=state.today.filter(id=>id!==x.id);state.checked=state.checked.filter(id=>id!==x.id);save();render()});
+    }
+    items.appendChild(row);
+   });list.appendChild(section);
+ });
+}
+$("inventoryTab").onclick=()=>{mode="inventory";render()};$("todayTab").onclick=()=>{mode="today";render()};
+$("search").addEventListener("input",render);$("categoryFilter").addEventListener("change",render);
+$("addBtn").onclick=()=>{$("modalbg").classList.add("show");$("itemName").focus()};
+$("manageCategoriesBtn").onclick=()=>{$("categoryModal").classList.add("show");renderCategoryManager();$("newCategoryName").focus()};
+$("categoryManagerClose").onclick=()=>$("categoryModal").classList.remove("show");
+$("categoryModal").addEventListener("click",e=>{if(e.target===$("categoryModal"))$("categoryModal").classList.remove("show")});
+$("categoryForm").addEventListener("submit",e=>{
+ e.preventDefault();const name=$("newCategoryName").value.trim();
+ if(!name)return;
+ if(categories().some(c=>c.toLowerCase()===name.toLowerCase())){alert("이미 존재하는 분류입니다.");return}
+ state.categories.push(name);save();fillSelects();render();renderCategoryManager();$("newCategoryName").value="";
+ $("itemCategory").value=name;
+});
+$("cancelBtn").onclick=()=>{$("modalbg").classList.remove("show");$("addForm").reset()};
+$("modalbg").addEventListener("click",e=>{if(e.target===$("modalbg"))$("cancelBtn").click()});
+function addInventoryItem(){
+ const name=$("itemName").value.trim(),cat=$("itemCategory").value;
+ if(!name){alert("용품 이름을 입력해 주세요.");$("itemName").focus();return}
+ if(!cat){alert("분류를 선택해 주세요. 분류가 없다면 ‘분류 추가·삭제’에서 먼저 추가해 주세요.");return}
+ if(!state.categories.includes(cat))state.categories.push(cat);
+ state.items.push({id:"custom-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),cat,name});
+ save();$("modalbg").classList.remove("show");$("addForm").reset();fillSelects();render();
+}
+$("saveItemBtn").addEventListener("click",addInventoryItem);
+$("addForm").addEventListener("submit",e=>{e.preventDefault();addInventoryItem()});
+$("finishBtn").onclick=()=>{if(!state.today.length){alert("오늘 가져갈 용품을 먼저 선택해 주세요.");return}const uncheck=state.items.filter(x=>state.today.includes(x.id)&&!state.checked.includes(x.id));$("finishText").textContent=uncheck.length?`아직 확인하지 않은 용품이 ${uncheck.length}개 있습니다. 그래도 오늘 목록을 초기화할까요? 전체 보유 목록은 유지됩니다.`:"모든 용품을 확인하셨습니다. 오늘 목록과 체크 상태를 초기화합니다. 전체 보유 목록은 그대로 유지됩니다.";$("finishModal").classList.add("show")};
+$("finishCancel").onclick=()=>$("finishModal").classList.remove("show");
+$("finishConfirm").onclick=()=>{state.today=[];state.checked=[];save();$("finishModal").classList.remove("show");mode="inventory";render();window.scrollTo({top:0,behavior:"smooth"})};
+$("uncheckBtn").onclick=()=>{if(confirm("오늘 가져갈 용품은 유지하고 체크 상태만 초기화할까요?")){state.checked=[];save();render()}};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="washkit-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const v=JSON.parse(await f.text());const s=Array.isArray(v)?{items:v,today:[],checked:[]}:v;if(!Array.isArray(s.items)||!s.items.every(x=>x.name&&x.cat&&x.id)){throw Error("invalid")}if(confirm("현재 전체 보유 목록과 오늘 선택을 백업 파일의 내용으로 교체할까요?")){state={items:s.items,today:Array.isArray(s.today)?s.today:[],checked:Array.isArray(s.checked)?s.checked:[],categories:Array.isArray(s.categories)?s.categories:[...new Set([...defaults.map(x=>x[0]),...s.items.map(x=>x.cat)])]};save();fillSelects();render();alert("백업을 불러왔습니다.")}}catch(err){alert("올바른 WashKit 백업 파일이 아닙니다.")}e.target.value=""});
+fillSelects();render();
+</script>
+</body></html>
