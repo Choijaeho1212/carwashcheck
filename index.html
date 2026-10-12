@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101d2d">
 <title>WashKit | 세차용품 관리</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--ink:#182536;--muted:#708094;--line:#e4eaf1;--blue:#2864e8;--blue-soft:#edf3ff;--green:#16845b;--shadow:0 8px 28px #152a4410}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}
@@ -16,11 +17,53 @@ main{max-width:960px;margin:0 auto;padding:20px 16px 50px}.stats{display:grid;gr
 
 .modalbg{display:none;position:fixed;inset:0;background:#101d2d88;align-items:center;justify-content:center;padding:18px;z-index:5}.modalbg.show{display:flex}.modal{background:#fff;border-radius:18px;padding:22px;max-width:430px;width:100%;box-shadow:0 20px 60px #0003}.modal h3{margin:0 0 8px}.modal p{color:var(--muted);font-size:14px;line-height:1.6}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 @media(max-width:560px){.tab{font-size:11px;padding:11px 4px}header{padding:22px 17px}main{padding:14px 12px 35px}.stat{padding:11px}.stat .num{font-size:23px}.remaining-stat{padding:14px}.remaining-value{font-size:31px!important}.remaining-title{font-size:14px}.remaining-caption{font-size:11px}.tab{font-size:12px;padding:11px 5px}.toolbar{gap:7px}.search{flex-basis:100%}.filter{flex:1;min-width:0}.btn{padding:10px 11px}.item{padding:11px 10px;gap:8px}.pillbtn{padding:8px 7px}.hero{letter-spacing:-.7px}.cathead{padding:12px}}
+
+.auth-gate{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#101d2d,#1d3555)}
+.auth-card{width:min(100%,430px);background:#fff;border-radius:22px;padding:28px;box-shadow:0 24px 80px #0003}
+.auth-brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:19px;margin-bottom:20px}
+.auth-brand .logo{flex:0 0 auto;color:#fff}
+.auth-card h1{font-size:24px;margin:0 0 8px;letter-spacing:-.6px}
+.auth-card p{font-size:13px;line-height:1.65;color:#66768b;margin:0 0 18px}
+.auth-card label{display:block;font-size:12px;font-weight:800;margin:13px 0 6px;color:#405066}
+.auth-card input{width:100%;border:1px solid #dce3ed;border-radius:10px;padding:12px;font:inherit;font-size:14px;outline:none}
+.auth-card input:focus{border-color:#2864e8;box-shadow:0 0 0 3px #2864e81a}
+.auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.auth-status{font-size:12px;line-height:1.6;margin-top:13px;padding:10px 12px;border-radius:10px;background:#f1f5f9;color:#475569;overflow-wrap:anywhere}
+.auth-status.error{background:#fff1f0;color:#a33d37}
+.auth-status.success{background:#edf9f2;color:#16734e}
+.account-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px}
+.account-email{font-size:11px;color:#b9c6d5;overflow-wrap:anywhere}
+.account-tools button{border:1px solid #536174;background:#1b2c41;color:#fff;border-radius:9px;padding:7px 10px;font-size:11px;font-weight:750}
+#appShell{display:none}
+@media(max-width:520px){.auth-card{padding:22px}.auth-card h1{font-size:22px}}
+
 </style>
 </head>
 <body>
+
+<section id="authGate" class="auth-gate" aria-live="polite">
+  <div class="auth-card">
+    <div class="auth-brand"><div class="logo">💧</div><div>WashKit</div></div>
+    <h1>어디서든 같은 세차 목록</h1>
+    <p>로그인하면 보유 용품, 희석비, 오늘 세차 목록과 세차 기록을 Supabase에 저장해 여러 기기에서 함께 사용할 수 있습니다.</p>
+    <form id="authForm">
+      <label for="authEmail">이메일</label>
+      <input id="authEmail" type="email" autocomplete="email" required placeholder="이메일 주소">
+      <label for="authPassword">비밀번호</label>
+      <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="6자 이상">
+      <div class="auth-actions">
+        <button class="btn primary" type="submit" id="signInBtn">로그인</button>
+        <button class="btn secondary" type="button" id="signUpBtn">회원가입</button>
+      </div>
+    </form>
+    <div id="authStatus" class="auth-status">기존 계정이 있으면 로그인하시고, 처음이라면 회원가입을 선택하세요.</div>
+  </div>
+</section>
+<div id="appShell">
+
 <header><div class="wrap">
 <div class="brand"><div class="logo">💧</div><div>WashKit <span style="font-size:11px;color:#91a5be;font-weight:600;margin-left:5px">CAR CARE CHECKLIST</span></div></div>
+<div class="account-tools"><span id="accountEmail" class="account-email"></span><button type="button" id="signOutBtn">로그아웃</button></div>
 <div class="eyebrow">YOUR GEAR, ACCOUNTED FOR.</div>
 <h1 class="hero">세차 준비부터 마무리까지,<br><span>한눈에.</span></h1>
 <p class="sub">보유 용품을 관리하고, 오늘 필요한 용품만 선택해 체크하세요.</p>
@@ -148,6 +191,7 @@ main{max-width:960px;margin:0 auto;padding:20px 16px 50px}.stats{display:grid;gr
 <div id="categoryManagerList" style="margin-top:14px;max-height:45vh;overflow:auto"></div>
 <div class="modal-actions"><button type="button" class="btn secondary" id="categoryManagerClose">닫기</button></div></div></div>
 <div class="modalbg" id="finishModal"><div class="modal"><h3>오늘 세차를 마무리할까요?</h3><p id="finishText">오늘 목록과 체크 상태를 초기화합니다. 전체 보유 목록은 그대로 유지됩니다.</p><div class="modal-actions"><button class="btn secondary" id="finishCancel">계속 확인</button><button class="btn success" id="finishConfirm">완료 및 초기화</button></div></div></div>
+</div><!-- /appShell -->
 <script>
 const defaults = [
 ["장비 List",["압축분무기","ik 폼프로2 폼압축 분무기","숏랜스 (본체, 25도, 40도)","돌리 & 뚜껑","준카 & 배터리 & 라이트 & 가방","비커 (500mL) & 지커 (50mL)","버킷 (그릿가드, 미트슬라이드, 어부바)","폼랜스 (원액 or 희석)","폼랜스 거치대","마그웻 하부 워시패드 + 휠패드 (미니)","퓨어스타 워시패드","브러쉬 3종 (블랙, 블루, 옐로우)","벅벅이","잇츠윈 타이어 브러쉬","프로스태프 림 브러쉬","잇츠윈 스탬프 브러쉬 or 루쿨란 브러쉬XL"]],
@@ -168,7 +212,162 @@ state.items.forEach(x=>{if(!state.categories.includes(x.cat))state.categories.pu
 state.dilutionEnabled=state.dilutionEnabled&&typeof state.dilutionEnabled==="object"?state.dilutionEnabled:{"프리워시":true,"본세차":true,"휠&타이어":true,"실내 세정":true,"퀵디 & 코팅 & 기타":true};
 let mode="inventory";
 const $=id=>document.getElementById(id);
-function save(){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
+
+// Supabase connection: the publishable key is intended for browser use.
+// Access is restricted by authentication and Row Level Security (RLS).
+const SUPABASE_URL = "https://xubrdcidfstkzbirrldq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_aMKs5oydAwg_qheIOfOZLg_8Y5KIiBx";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let authUser = null;
+let cloudReady = false;
+let cloudSaveTimer = null;
+let realtimeChannel = null;
+let applyingCloudData = false;
+let lastCloudPayload = "";
+
+function setAuthStatus(message, kind="") {
+  const el = document.getElementById("authStatus");
+  if (!el) return;
+  el.textContent = message;
+  el.className = "auth-status" + (kind ? " " + kind : "");
+}
+function showAuthGate(message, kind="") {
+  document.getElementById("authGate").style.display = "grid";
+  document.getElementById("appShell").style.display = "none";
+  if (message) setAuthStatus(message, kind);
+}
+function showApp() {
+  document.getElementById("authGate").style.display = "none";
+  document.getElementById("appShell").style.display = "block";
+  document.getElementById("accountEmail").textContent = authUser?.email || "";
+}
+function normalizeWashKitData(raw) {
+  if (!raw || typeof raw !== "object" || !Array.isArray(raw.items)) return null;
+  const normalized = {
+    ...raw,
+    items: raw.items,
+    today: Array.isArray(raw.today) ? raw.today : [],
+    checked: Array.isArray(raw.checked) ? raw.checked : [],
+    history: Array.isArray(raw.history) ? raw.history : [],
+    categories: Array.isArray(raw.categories) ? raw.categories : [...new Set([...defaults.map(x => x[0]), ...raw.items.map(x => x.cat).filter(Boolean)])],
+    dilutionEnabled: raw.dilutionEnabled && typeof raw.dilutionEnabled === "object" ? raw.dilutionEnabled : {}
+  };
+  normalized.items.forEach(item => {
+    if (item?.cat && !normalized.categories.includes(item.cat)) normalized.categories.push(item.cat);
+  });
+  return normalized;
+}
+function applyWashKitData(raw) {
+  const normalized = normalizeWashKitData(raw);
+  if (!normalized) return false;
+  state = normalized;
+  try { localStorage.setItem(STORE, JSON.stringify(state)); } catch(e) {}
+  fillSelects();
+  render();
+  return true;
+}
+async function saveToCloud() {
+  if (!authUser || !cloudReady || applyingCloudData) return;
+  const payload = JSON.stringify(state);
+  if (payload === lastCloudPayload) return;
+  try {
+    const { error } = await supabaseClient
+      .from("washkit_data")
+      .upsert({
+        user_id: authUser.id,
+        data: state,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id" });
+    if (error) throw error;
+    lastCloudPayload = payload;
+  } catch (error) {
+    console.error("WashKit cloud save failed:", error);
+    setAuthStatus("클라우드 저장에 실패했습니다. 연결과 RLS 정책을 확인해 주세요: " + (error.message || error), "error");
+  }
+}
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(state)); } catch(e) {}
+  if (authUser && cloudReady && !applyingCloudData) {
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(() => { saveToCloud(); }, 350);
+  }
+}
+async function loadCloudForUser(user) {
+  authUser = user;
+  cloudReady = false;
+  applyingCloudData = true;
+  try {
+    const { data: row, error } = await supabaseClient
+      .from("washkit_data")
+      .select("data, updated_at")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (error) throw error;
+
+    if (row && row.data && typeof row.data === "object") {
+      // The cloud copy wins once it exists, keeping devices consistent.
+      applyWashKitData(row.data);
+      lastCloudPayload = JSON.stringify(state);
+      setAuthStatus("로그인되었습니다. Supabase 데이터를 불러왔습니다.", "success");
+    } else {
+      // First login: migrate this browser's existing local data to the cloud.
+      try {
+        const local = normalizeWashKitData(JSON.parse(localStorage.getItem(STORE) || "null"));
+        if (local) state = local;
+      } catch(e) {}
+      fillSelects();
+      render();
+      lastCloudPayload = "";
+    }
+    cloudReady = true;
+  } catch (error) {
+    console.error("WashKit cloud load failed:", error);
+    authUser = null;
+    showAuthGate("데이터를 불러오지 못했습니다. 테이블과 RLS 정책을 확인해 주세요: " + (error.message || error), "error");
+    return;
+  } finally {
+    applyingCloudData = false;
+  }
+
+  showApp();
+  if (!lastCloudPayload) await saveToCloud();
+  if (realtimeChannel) await supabaseClient.removeChannel(realtimeChannel);
+  realtimeChannel = supabaseClient
+    .channel("washkit-data-" + user.id)
+    .on("postgres_changes", {
+      event: "*",
+      schema: "public",
+      table: "washkit_data",
+      filter: "user_id=eq." + user.id
+    }, payload => {
+      if (!payload.new?.data) return;
+      const incoming = JSON.stringify(payload.new.data);
+      if (incoming === JSON.stringify(state)) return;
+      applyingCloudData = true;
+      try {
+        applyWashKitData(payload.new.data);
+        lastCloudPayload = JSON.stringify(state);
+      } finally {
+        applyingCloudData = false;
+      }
+    })
+    .subscribe();
+}
+async function handleAuthSession(session) {
+  if (session?.user) {
+    setAuthStatus("로그인 정보를 확인하고 데이터를 불러오는 중입니다.");
+    await loadCloudForUser(session.user);
+  } else {
+    authUser = null;
+    cloudReady = false;
+    if (realtimeChannel) {
+      await supabaseClient.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
+    showAuthGate("로그인하면 여러 기기에서 같은 WashKit 데이터를 사용할 수 있습니다.");
+  }
+}
+
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function categories(){return [...new Set([...state.categories,...state.items.map(x=>x.cat)])]}
 function fillSelects(){const f=$("categoryFilter"),old=f.value;f.innerHTML='<option value="">전체 분류</option>'+categories().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");if(categories().includes(old))f.value=old;$("itemCategory").innerHTML=categories().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("")}
@@ -551,6 +750,81 @@ $("uncheckBtn").onclick=()=>{if(confirm("오늘 가져갈 용품은 유지하고
 $("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="washkit-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 $("importBtn").onclick=()=>$("importFile").click();
 $("importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const v=JSON.parse(await f.text());const s=Array.isArray(v)?{items:v,today:[],checked:[]}:v;if(!Array.isArray(s.items)||!s.items.every(x=>x.name&&x.cat&&x.id)){throw Error("invalid")}if(confirm("현재 전체 보유 목록과 오늘 선택을 백업 파일의 내용으로 교체할까요?")){state={items:s.items,today:Array.isArray(s.today)?s.today:[],checked:Array.isArray(s.checked)?s.checked:[],expenses:Array.isArray(s.expenses)?s.expenses:[],categories:Array.isArray(s.categories)?s.categories:[...new Set([...defaults.map(x=>x[0]),...s.items.map(x=>x.cat)])]};save();fillSelects();render();alert("백업을 불러왔습니다.")}}catch(err){alert("올바른 WashKit 백업 파일이 아닙니다.")}e.target.value=""});
+
 fillSelects();render();
+
+// Authentication form: existing account login and new account registration.
+document.getElementById("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  const button = document.getElementById("signInBtn");
+  button.disabled = true;
+  setAuthStatus("로그인 중입니다.");
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    setAuthStatus("로그인되었습니다. 데이터를 불러오는 중입니다.", "success");
+  } catch (error) {
+    setAuthStatus("로그인에 실패했습니다: " + (error.message || error), "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+document.getElementById("signUpBtn").addEventListener("click", async () => {
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+  if (!email || !password || password.length < 6) {
+    setAuthStatus("이메일과 6자 이상의 비밀번호를 입력해 주세요.", "error");
+    return;
+  }
+  const button = document.getElementById("signUpBtn");
+  button.disabled = true;
+  setAuthStatus("회원가입을 처리하고 있습니다.");
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+    if (error) throw error;
+    if (data.session) {
+      setAuthStatus("회원가입이 완료되었습니다. 데이터를 불러오는 중입니다.", "success");
+    } else {
+      setAuthStatus("회원가입 요청이 완료되었습니다. 이메일 인증 링크를 확인한 뒤 로그인해 주세요.", "success");
+    }
+  } catch (error) {
+    setAuthStatus("회원가입에 실패했습니다: " + (error.message || error), "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+document.getElementById("signOutBtn").addEventListener("click", async () => {
+  const button = document.getElementById("signOutBtn");
+  button.disabled = true;
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) throw error;
+    await handleAuthSession(null);
+  } catch (error) {
+    alert("로그아웃에 실패했습니다: " + (error.message || error));
+  } finally {
+    button.disabled = false;
+  }
+});
+
+(async function initializeSupabaseAuth() {
+  showAuthGate("Supabase 연결을 확인하고 있습니다.");
+  if (!window.supabase?.createClient) {
+    setAuthStatus("Supabase 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침해 주세요.", "error");
+    return;
+  }
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    setAuthStatus("로그인 상태를 확인하지 못했습니다: " + error.message, "error");
+    return;
+  }
+  await handleAuthSession(data.session);
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    // Defer network work to avoid doing Supabase calls inside the auth callback.
+    setTimeout(() => { handleAuthSession(session); }, 0);
+  });
+})();
 </script>
 </body></html>
